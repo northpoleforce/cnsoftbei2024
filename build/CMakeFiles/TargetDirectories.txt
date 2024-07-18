@@ -1,0 +1,3 @@
+/home/northpoleforce/cnsoftbei2024/build/CMakeFiles/main.dir
+/home/northpoleforce/cnsoftbei2024/build/CMakeFiles/edit_cache.dir
+/home/northpoleforce/cnsoftbei2024/build/CMakeFiles/rebuild_cache.dir

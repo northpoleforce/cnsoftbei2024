@@ -1,0 +1,12 @@
+[
+{
+  "directory": "/home/northpoleforce/cnsoftbei2024/build",
+  "command": "/usr/bin/g++  -I/home/northpoleforce/cnsoftbei2024/include -I/home/northpoleforce/cnsoftbei2024/include/unitree_legged_sdk -I/usr/local/include/apriltag -I/home/unitree/CAIR/CAIP2024_Go1/include/apriltag -I/usr/include/python3.10 -isystem /usr/local/include/opencv4 -O3 -no-pie -g -o CMakeFiles/main.dir/test_move.cpp.o -c /home/northpoleforce/cnsoftbei2024/test_move.cpp",
+  "file": "/home/northpoleforce/cnsoftbei2024/test_move.cpp"
+},
+{
+  "directory": "/home/northpoleforce/cnsoftbei2024/build",
+  "command": "/usr/bin/g++  -I/home/northpoleforce/cnsoftbei2024/include -I/home/northpoleforce/cnsoftbei2024/include/unitree_legged_sdk -I/usr/local/include/apriltag -I/home/unitree/CAIR/CAIP2024_Go1/include/apriltag -I/usr/include/python3.10 -isystem /usr/local/include/opencv4 -O3 -no-pie -g -o CMakeFiles/main.dir/move.cpp.o -c /home/northpoleforce/cnsoftbei2024/move.cpp",
+  "file": "/home/northpoleforce/cnsoftbei2024/move.cpp"
+}
+]
