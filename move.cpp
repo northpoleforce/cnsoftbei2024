@@ -19,15 +19,6 @@ void Custom::UDPSend()
 void Custom::RobotControl()
 {
   udp.GetRecv(state);
-  std::cout << "RobotControl\n";
-  std::cout << "bodyHeight: " << state.bodyHeight << "\n";
-  IMU imu = state.imu;
-  std::cout << "IMU: \n";
-  std::cout << "accelerometer: " << imu.accelerometer[0] << " " << imu.accelerometer[1] << " " << imu.accelerometer[2] << "\n";
-  std::cout << "gyroscope: " << imu.gyroscope[0] << " " << imu.gyroscope[1] << " " << imu.gyroscope[2] << "\n";
-  // std::cout << imu.accelerometer[0] << " " << imu.accelerometer[1] << " " << imu.accelerometer[2] << " "
-  //           << imu.gyroscope[0] << " " << imu.gyroscope[1] << " " << imu.gyroscope[2] << " "
-  //           << imu.rpy[0] << " " << imu.rpy[1] << " " << imu.rpy[2] << std::endl;
   udp.SetSend(cmd);
 }
 

@@ -16,9 +16,9 @@ int main()
         // std::cin >> degree >> speed;
         // custom.turnRightDegree(degree, speed);
 
-        // std::cout << "\033[1;31m forward walk: Please input the distance and speed: \033[0m" << std::endl;
-        // std::cin >> distance >> speed;
-        // custom.forwardWalk_m(distance, speed);
+        std::cout << "\033[1;31m forward walk: Please input the distance and speed: \033[0m" << std::endl;
+        std::cin >> distance >> speed;
+        custom.forwardWalk_m(distance, speed);
         // std::cout << "\033[1;31m left walk: Please input the distance and speed: \033[0m" << std::endl;
         // std::cin >> distance >> speed;
         // custom.leftWalk_m(distance, speed);
