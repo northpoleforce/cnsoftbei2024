@@ -6,7 +6,7 @@
 #include <iostream>
 #include <unistd.h>
 #include <string.h>
-
+#include "FaceLightClient.h"
 using namespace UNITREE_LEGGED_SDK;
 
 class Custom
@@ -25,6 +25,11 @@ public:
   
   void cmdReset();
   
+  // oplin add for 巡检任务
+  void rise(); // 抬头
+  void lower(); // 低头
+  void warning(); // 警告
+
   void turnLeft_Degree(float degree, float speed);
   void turnLeft90();
   void turnRight_Degree(float degree, float speed);
