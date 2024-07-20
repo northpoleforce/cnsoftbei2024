@@ -1,0 +1,88 @@
+cmake_minimum_required(VERSION 3.1)
+
+set(CMAKE_CUDA_ARCHITECTURES 60 61 62 70 72 75 86)
+set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
+
+project(Go1_yolo LANGUAGES CXX CUDA)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++14 -O3")
+set(CMAKE_CXX_STANDARD 14)
+set(CMAKE_BUILD_TYPE Release)
+option(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
+
+# 添加头文件目录，这样在编译时可以找到这些头文件
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/unitree_legged_sdk)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/UnitreecameraSDK-main)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/faceLightSDK_Nano)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
+
+# 添加链接库目录，这样在链接时可以找到这些库
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/unitree_legged_sdk/arm64)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/UnitreecameraSDK-main/arm64)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/faceLightSDK_Nano)
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
+
+# 查找GLUT库
+find_package(GLUT REQUIRED)
+if(NOT GLUT_FOUND)
+    # 如果没有找到GLUT，打印错误信息并退出
+    message(FATAL_ERROR "GLUT Library Not Found")
+endif()
+
+# 查找X11库
+find_package(X11 REQUIRED)
+if(NOT X11_FOUND)
+    # 如果没有找到X11，打印错误信息并退出
+    message(FATAL_ERROR "X11 Library Not Found")
+endif()
+
+
+# CUDA
+find_package(CUDA REQUIRED)
+message(STATUS "CUDA Libs: \n${CUDA_LIBRARIES}\n")
+get_filename_component(CUDA_LIB_DIR ${CUDA_LIBRARIES} DIRECTORY)
+message(STATUS "CUDA Headers: \n${CUDA_INCLUDE_DIRS}\n")
+
+# OpenCV
+find_package(OpenCV REQUIRED)
+message(STATUS "OpenCV Libs: \n${OpenCV_LIBS}\n")
+message(STATUS "OpenCV Libraries: \n${OpenCV_LIBRARIES}\n")
+message(STATUS "OpenCV Headers: \n${OpenCV_INCLUDE_DIRS}\n")
+
+# TensorRT
+set(TensorRT_INCLUDE_DIRS /usr/include/aarch64-linux-gnu)
+set(TensorRT_LIBRARIES /usr/lib/aarch64-linux-gnu)
+
+
+message(STATUS "TensorRT Libs: \n${TensorRT_LIBRARIES}\n")
+message(STATUS "TensorRT Headers: \n${TensorRT_INCLUDE_DIRS}\n")
+
+list(APPEND INCLUDE_DIRS
+        ${CUDA_INCLUDE_DIRS}
+        ${OpenCV_INCLUDE_DIRS}
+        ${TensorRT_INCLUDE_DIRS}
+        ${X11_INCLUDE_DIRS}
+        ${GLUT_INCLUDE_DIRS}
+        ${OPENGL_INCLUDE_DIRS}
+        include
+        )
+
+list(APPEND ALL_LIBS
+        ${CUDA_LIBRARIES}
+        ${CUDA_LIB_DIR}
+        ${OpenCV_LIBRARIES}
+        ${TensorRT_LIBRARIES}
+        )
+
+include_directories(${INCLUDE_DIRS})
+
+add_executable(${PROJECT_NAME}
+        src/detect_main.cpp
+        src/move.cpp
+        include/Detect_TensorRT.hpp
+        include/common.hpp
+        )
+
+link_directories(${ALL_LIBS})
+set(EXTRA_LIBS -pthread libunitree_camera.a libunitree_legged_sdk.a libfaceLight_SDK_arm64.so tstc_V4L2_xu_camera udev systemlog ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${X11_LIBRARIES})
+target_link_libraries(${PROJECT_NAME} PRIVATE nvinfer nvinfer_plugin ${CUDA_LIBRARIES} ${EXTRA_LIBS})
