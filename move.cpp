@@ -38,6 +38,37 @@ void Custom::cmdReset()
   cmd.reserve = 0;
 }
 
+// oplin add for 巡检
+void Custom::rise() {
+    cmdReset(); cmd.mode = 1;
+    cmd.euler[1] = -0.60;     sleep(3);
+    cmdReset(); //TODO 如果接入整体运动控制,这个cmdReset是不是应该去掉?
+}
+void Custom::lower() {
+    cmdReset(); cmd.mode = 1;
+    cmd.euler[1] = 0.60;     sleep(3);
+    cmdReset();
+}
+void Custom::warning() {
+    cmdReset(); 
+    FaceLightClient client;
+    /* Same Color Test */
+    client.setAllLed(client.red);
+    client.sendCmd();
+    usleep(1200000);
+    client.setAllLed(client.blue);
+    client.sendCmd();
+    usleep(1200000);
+    client.setAllLed(client.red);
+    client.sendCmd();
+    usleep(1200000);
+    client.setAllLed(client.blue);
+    client.sendCmd();
+    usleep(1200000);
+    client.setAllLed(client.black);
+    client.sendCmd();
+}
+
 
 
 double degreesToRadians(double degrees) {
