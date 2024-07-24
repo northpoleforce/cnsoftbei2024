@@ -1,0 +1,10 @@
+cmake -D CMAKE_BUILD_TYPE=RELEASE \
+    -D OPENCV_EXTRA_MODULES_PATH=../../opencv_contrib-4.1.1/modules \
+    -D OPENCV_GENERATE_PKGCONFIG=ON \
+    -D BUILD_opencv_python2=OFF \
+    -D BUILD_opencv_python3=ON \
+    -D INSTALL_PYTHON_EXAMPLES=OFF\
+    -D INSTALL_C_EXAMPLES=OFF \
+    -D OPENCV_ENABLE_NONFREE=ON \
+    -D BUILD_EXAMPLES=ON \
+    -D WITH_CUDA=ON ..

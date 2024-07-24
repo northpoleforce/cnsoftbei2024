@@ -64,6 +64,9 @@
         "cinttypes": "cpp",
         "typeindex": "cpp",
         "typeinfo": "cpp",
-        "variant": "cpp"
+        "variant": "cpp",
+        "cfenv": "cpp",
+        "future": "cpp",
+        "__nullptr": "cpp"
     }
 }

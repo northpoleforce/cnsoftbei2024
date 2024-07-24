@@ -88,7 +88,13 @@ set(EXTRA_LIBS -pthread libunitree_camera.a libunitree_legged_sdk.a tstc_V4L2_xu
 # add_executable(main img7.cpp move.cpp)
 # add_executable(main test_line.cpp move.cpp)
 # add_executable(main test_move.cpp move.cpp)
-add_executable(main test_vision_v0.cpp move.cpp)
+# add_executable(main test_vision_v0.cpp move.cpp)
+# add_executable(main test_cuda.cpp move.cpp Camera.cpp)
+# add_executable(main take_photo5.cpp move.cpp Camera.cpp)
+# add_executable(main test_video.cpp move.cpp Camera.cpp)
+# add_executable(main test_corret.cpp move.cpp Camera.cpp MapImageProcessing.cpp)
+add_executable(main test_corret_v1.cpp move.cpp Camera.cpp MapImageProcessing.cpp)
+# add_executable(main test_matchTemplate.cpp move.cpp Camera.cpp)
 
 # 包含Python头文件
 target_include_directories(main PRIVATE ${PYTHON_INCLUDE_DIRS})

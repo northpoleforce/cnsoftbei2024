@@ -1,0 +1,19 @@
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/unitree_legged_sdk/include/**",
+                "${workspaceFolder}/unitree_legged_sdk/include/unitree_legged_sdk/**",
+                "/usr/local/include/opencv4/**",
+                "${workspaceFolder}/include/**",
+            ],
+            "defines": [],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c17",
+            "cppStandard": "gnu++17",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

@@ -5,6 +5,8 @@
 #include <iostream>
 
 #include <unistd.h>
+#include <tag25h9.h>
+#include <apriltag.h>
 #include <opencv2/opencv.hpp>
 
 #include "move.h"
@@ -202,6 +204,47 @@ public:
     }
 };
 
+class AprilTagDetector
+{
+private:
+    apriltag_family_t *tf;
+    apriltag_detector_t *td;
+
+public:
+    AprilTagDetector()
+    {
+        tf = tag25h9_create();
+        td = apriltag_detector_create();
+        apriltag_detector_add_family(td, tf);
+    }
+
+    ~AprilTagDetector()
+    {
+        apriltag_detector_destroy(td);
+        tag25h9_destroy(tf);
+    }
+
+    int detect(const cv::Mat &img)
+    {
+        cv::Mat gray;
+        cv::cvtColor(img, gray, cv::COLOR_BGR2GRAY);
+        image_u8_t im = {.width = gray.cols,
+                         .height = gray.rows,
+                         .stride = gray.cols,
+                         .buf = gray.data};
+        zarray_t *detections = apriltag_detector_detect(td, &im);
+        int res = -1;
+        if (zarray_size(detections) > 0)
+        {
+            apriltag_detection_t *det;
+            zarray_get(detections, 0, &det);
+            res = det->id;
+        }
+        apriltag_detections_destroy(detections);
+        return res;
+    }
+};
+
 int main()
 {
     // 启动：运动指令下达
@@ -209,49 +252,70 @@ int main()
     std::thread mainControl(&Custom::Start, &custom);
     PIDController pid_controllerYawSlow(0.4, 0, 0);
     PIDController pid_controllerYawFast(0.6, 0, 0);
-    PIDController pid_controllerY(0.0005, 0, 0);
-
-    Camera cam(2);
+    PIDController pid_controllerY(0.001, 0, 0);
     BGRMaskGenerator BGR_mask_generator(0, 100, 0, 100, 0, 100);
     ImageProcessor ImageProcessor;
+    AprilTagDetector detector;
+    Camera cam(1);
     while (1)
     {
         cv::Mat frame = cam.getFrame();
-        // 翻转frame
-        cv::flip(frame, frame, -1);
-        cv::Mat mask0 = BGR_mask_generator.getMask(frame);
-        cv::Mat mask1 = ImageProcessor.createCustomMask(mask0);
-        cv::Mat result = frame.clone();
-        std::pair<double, std::pair<bool, double>> result_pair = ImageProcessor.liner(mask1, result);
-        cv::imshow("result", result);
-        double distance = result_pair.first;
-        double angle = 0, angle_rad = 0;
-        if (result_pair.second.first)
+        cv::imshow("frame", frame);
+
+        int tagId = detector.detect(frame);
+        if (tagId != -1)
         {
-            angle_rad = M_PI / 2;
-            angle = 90;
+            std::cout << "tagId: " << tagId << std::endl;
         }
         else
         {
-            angle_rad = atan(result_pair.second.second);
-            angle_rad = angle_rad < 0 ? angle_rad + M_PI : angle_rad;
-            angle = angle_rad * 180 / M_PI;
-            angle = angle < 0 ? angle + 180 : angle;
+            std::cout << "tagId: " << "None" << std::endl;
         }
-        // 输出距离和角度
-        std::cout << "distance: " << distance << " angle: " << angle << std::endl;
-        double angle_goal_rad = M_PI / 2.0;
-        double angle_error = angle_rad - angle_goal_rad;
-        std::cout << "angle_error: " << angle_error << std::endl;
-        PIDController *pid_controllerYaw = (abs(angle_error) < M_PI / 6 ? &pid_controllerYawSlow : &pid_controllerYawFast);
-        double yaw_speed = pid_controllerYaw->P(angle_error);
-        std::cout << "yaw_speed: " << yaw_speed << std::endl;
-        double y_speed = pid_controllerY.P(distance);
-        std::cout << "y_speed: " << y_speed << std::endl;
-        custom.setVelocity(0.1, y_speed, yaw_speed);
-        // custom.setVelocity(0, y_speed, 0);
-        // custom.setVelocity(0.1, 0, 0);
-        // custom.setVelocity(0, 0, 0.1);
+
+        // // 翻转frame
+        // cv::flip(frame, frame, -1);
+
+        // // 获取frame的宽度和高度
+        // int width = frame.cols;
+        // int height = frame.rows;
+        // int part_height = height / 5;
+        // int start_height = 2 * part_height;
+        // int end_height = 4 * part_height;
+        // cv::Mat roi = frame(cv::Rect(0, start_height, width, end_height - start_height));
+
+        // cv::Mat mask0 = BGR_mask_generator.getMask(roi);
+        // cv::Mat mask1 = ImageProcessor.createCustomMask(mask0);
+        // cv::Mat result = roi.clone();
+        // std::pair<double, std::pair<bool, double>> result_pair = ImageProcessor.liner(mask1, result);
+        // cv::imshow("result", result);
+        // double distance = result_pair.first;
+        // double angle = 0, angle_rad = 0;
+        // if (result_pair.second.first)
+        // {
+        //     angle_rad = M_PI / 2;
+        //     angle = 90;
+        // }
+        // else
+        // {
+        //     angle_rad = atan(result_pair.second.second);
+        //     angle_rad = angle_rad < 0 ? angle_rad + M_PI : angle_rad;
+        //     angle = angle_rad * 180 / M_PI;
+        //     angle = angle < 0 ? angle + 180 : angle;
+        // }
+        // // 输出距离和角度
+        // std::cout << "distance: " << distance << " angle: " << angle << std::endl;
+        // double angle_goal_rad = M_PI / 2.0;
+        // double angle_error = angle_rad - angle_goal_rad;
+        // std::cout << "angle_error: " << angle_error << std::endl;
+        // PIDController *pid_controllerYaw = (abs(angle_error) < M_PI / 6 ? &pid_controllerYawSlow : &pid_controllerYawFast);
+        // double yaw_speed = pid_controllerYaw->P(angle_error);
+        // std::cout << "yaw_speed: " << yaw_speed << std::endl;
+        // double y_speed = pid_controllerY.P(distance);
+        // std::cout << "y_speed: " << y_speed << std::endl;
+        // custom.setVelocity(0.1, y_speed, yaw_speed);
+        // // custom.setVelocity(0, y_speed, 0);
+        // // custom.setVelocity(0.1, 0, 0);
+        // // custom.setVelocity(0, 0, 0.1);
 
         cv::waitKey(1);
     }

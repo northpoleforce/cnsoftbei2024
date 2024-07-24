@@ -9,6 +9,21 @@
 
 using namespace UNITREE_LEGGED_SDK;
 
+class PIDController
+{
+    double Kp, Ki, Kd;
+    double integral = 0.0;
+    double previous_error = 0.0;
+
+public:
+    PIDController(double Kp, double Ki, double Kd) : Kp(Kp), Ki(Ki), Kd(Kd) {}
+    double P(double setpoint, double measured_value)
+    {
+        double error = setpoint - measured_value;
+        return Kp * error;
+    }
+};
+
 class Custom
 {
 public:
