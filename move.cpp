@@ -235,6 +235,39 @@ void Custom::moveLeft(float distance, float speed)
   }
   cmdReset();
 }
+void Custom::moveForward(float distance, float speed)
+{
+    udp.GetRecv(state);
+    float initialPositionX = state.position[0];
+    float currentPositionX = initialPositionX;
+    float targetPositionX = initialPositionX + distance;
+    float accelX = 0.0;
+    KalmanFilter kf(0.1, 0.1, 1.0); // 初始化卡尔曼滤波器
+    const float updateInterval = 0.01; // 更新间隔（秒）
+    PIDController pidX(0.5, 0, 0);
+    cmdReset();
+    cmd.mode = 2;
+    cmd.gaitType = 1;
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(updateInterval * 1000)));
+        udp.GetRecv(state);
+        currentPositionX = state.position[0];
+        accelX = state.imu.accelerometer[0];
+        kf.predict(accelX * updateInterval); // 预测步骤
+        kf.update(currentPositionX);         // 更新步骤
+        float filteredPositionX = kf.getPosition();
+        float offset = 0.1;
+        std::cout << "filteredPositionX: " << filteredPositionX << std::endl;
+        std::cout << "initialPositionX: " << initialPositionX << std::endl;
+        if (std::abs(filteredPositionX - targetPositionX) <= offset)
+            break;
+        float speedX = pidX.P(targetPositionX, filteredPositionX);
+        std::cout << "speedX: " << speedX << std::endl;
+        setVelocity(speedX, 0, 0);
+    }
+    cmdReset();
+}
 
 void Custom::showIMU()
 {

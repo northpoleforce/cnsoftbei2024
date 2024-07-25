@@ -77,6 +77,10 @@ public:
                               cv::Point &leftPoint, cv::Point &rightPoint);
     void lineFit(cv::Mat &img,
                  cv::Point &midPoint, int &degree);
+    void getMidpointDraw(int degree, std::vector<cv::Vec4i> &lines,
+                         cv::Point &midPoint, cv::Mat &edgeColor);
+    void cornerFit(cv::Mat &img,
+                   cv::Point &cornerMidPoint, int &degreeVertical);
     void lineShow(cv::Mat &img, cv::Mat &mask0Color, cv::Mat &mask1Color, cv::Mat &edgeColor);
 };
 

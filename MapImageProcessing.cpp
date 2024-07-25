@@ -330,21 +330,20 @@ void LineProcessor::lineFit(cv::Mat &img,
     degree = degreeMaxCount;
     if (degree < 0)
         degree += 180;
-    std::vector<cv::Vec4i> linesMost = linesByDegree[degreeMaxCount];
-    cv::Point leftPoint, rightPoint;
-    findLineEndsByDegree(degreeMaxCount, linesMost, leftPoint, rightPoint);
-    // cv::Point degree
-    // 计算中点
-    midPoint.x = (leftPoint.x + rightPoint.x) / 2;
-    midPoint.y = (leftPoint.y + rightPoint.y) / 2;
-    // midPoint((leftPoint.x + rightPoint.x) / 2, (leftPoint.y + rightPoint.y) / 2);
-    // 以degreeMaxCount作为角度，midPoint作为中点，绘制一条直线
-    double radian = degreeMaxCount * (CV_PI / 180.0);
-    double dx = std::cos(radian);
-    double dy = std::sin(radian);
-    cv::Point p1(midPoint.x - 1000 * dx, midPoint.y - 1000 * dy);
-    cv::Point p2(midPoint.x + 1000 * dx, midPoint.y + 1000 * dy);
-    cv::line(edgeColor, p1, p2, cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
+    // std::vector<cv::Vec4i> linesMost = linesByDegree[degreeMaxCount];
+    // cv::Point leftPoint, rightPoint;
+    // findLineEndsByDegree(degreeMaxCount, linesMost, leftPoint, rightPoint);
+    // // cv::Point degree
+    // // 计算中点
+    // midPoint.x = (leftPoint.x + rightPoint.x) / 2;
+    // midPoint.y = (leftPoint.y + rightPoint.y) / 2;
+    // // 以degreeMaxCount作为角度，midPoint作为中点，绘制一条直线
+    // double radian = degreeMaxCount * (CV_PI / 180.0);
+    // double dx = std::cos(radian);
+    // double dy = std::sin(radian);
+    // cv::Point p1(midPoint.x - 1000 * dx, midPoint.y - 1000 * dy);
+    // cv::Point p2(midPoint.x + 1000 * dx, midPoint.y + 1000 * dy);
+    // cv::line(edgeColor, p1, p2, cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
     lineShow(img, mask0Color, mask1Color, edgeColor);
 }
 void LineProcessor::lineShow(cv::Mat &img, cv::Mat &mask0Color, cv::Mat &mask1Color, cv::Mat &edgeColor)
@@ -362,4 +361,75 @@ void LineProcessor::lineShow(cv::Mat &img, cv::Mat &mask0Color, cv::Mat &mask1Co
         // 显示最终的图像
         cv::imshow("Final Image", finalImage);
     }
+}
+
+// 通过一个角度的所有线，找到这些平行的中点，然后绘制一条直线
+void LineProcessor::getMidpointDraw(int degree, std::vector<cv::Vec4i> &lines,
+                                    cv::Point &midPoint, cv::Mat &edgeColor)
+{
+    cv::Point leftPoint, rightPoint;
+    findLineEndsByDegree(degree, lines, leftPoint, rightPoint);
+    // 计算中点
+    midPoint.x = (leftPoint.x + rightPoint.x) / 2;
+    midPoint.y = (leftPoint.y + rightPoint.y) / 2;
+    // 以degreeMaxCount作为角度，midPoint作为中点，绘制一条直线
+    double radian = degree * (CV_PI / 180.0);
+    double dx = std::cos(radian);
+    double dy = std::sin(radian);
+    cv::Point p1(midPoint.x - 1000 * dx, midPoint.y - 1000 * dy);
+    cv::Point p2(midPoint.x + 1000 * dx, midPoint.y + 1000 * dy);
+    cv::line(edgeColor, p1, p2, cv::Scalar(0, 255, 0), 3, cv::LINE_AA);
+}
+
+void LineProcessor::cornerFit(cv::Mat &img,
+                              cv::Point &cornerMidPoint, int &degreeVertical)
+{
+    cv::Mat mask0Color, mask1Color, edgeColor;
+    // 检测直线
+    std::vector<cv::Vec4i> lines;
+    lineDetect(img, lines, mask0Color, mask1Color, edgeColor);
+    // 用map来存储角度相同的线
+    std::map<int, std::vector<cv::Vec4i>> linesByDegree;
+    std::map<int, int> linesByDegreeCount;
+    lineCount(lines, linesByDegree, linesByDegreeCount);
+    // 找第一个数量多的角度和第二个数量多的角度
+    int firstDegree = 0, secondDegree = 0;
+    int deltaDegree = 10;
+    int firstDegreeCount = 0, secondDegreeCount = 0;
+    for (auto it = linesByDegreeCount.begin(); it != linesByDegreeCount.end(); it++)
+    {
+        if (it->second > firstDegreeCount)
+        {
+            firstDegree = it->first;
+            firstDegreeCount = it->second;
+        }
+    }
+    for (auto it = linesByDegreeCount.begin(); it != linesByDegreeCount.end(); it++)
+    {
+        if (it->second > secondDegreeCount && std::abs(it->first - firstDegree) > deltaDegree)
+        {
+            secondDegree = it->first;
+            secondDegreeCount = it->second;
+        }
+    }
+    if (abs(firstDegree) < abs(secondDegree))
+        degreeVertical = secondDegree;
+    else
+        degreeVertical = firstDegree;
+    if (degreeVertical < 0)
+        degreeVertical += 180;
+    // 第一多角度的线，第二多角度的线
+    double k1 = std::tan(firstDegree * CV_PI / 180.0);
+    double k2 = std::tan(secondDegree * CV_PI / 180.0);
+    cv::Point midPoint1, midPoint2;
+    getMidpointDraw(firstDegree, linesByDegree[firstDegree], midPoint1, edgeColor);
+    getMidpointDraw(secondDegree, linesByDegree[secondDegree], midPoint2, edgeColor);
+    // 这两个角度的中线的交点
+    double x = (midPoint2.y - midPoint1.y + k1 * midPoint1.x - k2 * midPoint2.x) / (k1 - k2);
+    double y = k1 * (x - midPoint1.x) + midPoint1.y;
+    cornerMidPoint.x = x;
+    cornerMidPoint.y = y;
+    // 在图像上绘制交点
+    cv::circle(edgeColor, cornerMidPoint, 5, cv::Scalar(255, 0, 0), -1);
+    lineShow(img, mask0Color, mask1Color, edgeColor);
 }

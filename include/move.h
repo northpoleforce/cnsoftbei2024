@@ -72,6 +72,7 @@ public:
 
 	void setVelocity(float vx, float vy, float vr);
 	void moveLeft(float distance, float speed);
+	void moveForward(float distance, float speed);
 
 	void showIMU();
 
