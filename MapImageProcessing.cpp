@@ -197,7 +197,7 @@ void LineProcessor::lineDetect(cv::Mat &img,
              mask0Color, mask1Color, edges);
     // 使用霍夫变换检测直线
     const int linelength = 100;
-    cv::HoughLinesP(edges, lines, 1, CV_PI / 180, 50, linelength, 25);
+    cv::HoughLinesP(edges, lines, 1, CV_PI / 180, 50, linelength, 50);
     // 在彩色掩膜上绘制检测到的直线
     cv::cvtColor(edges, edgeColor, cv::COLOR_GRAY2BGR); // 颜色阈值掩膜二值图转彩色图
     for (size_t i = 0; i < lines.size(); i++)
