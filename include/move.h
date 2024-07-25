@@ -70,9 +70,13 @@ public:
 	void rightWalk_m(float distance, float speed);
 	void leftmove_test(int gType, float distance, float speed);
 
-	void setVelocity(float vx, float vy, float vr);
+	void setVelocity(float vx, float vy, float vr, int gait = 1);
+	void setVelocityClimb(float vx, float vy, float vr);
 	void moveLeft(float distance, float speed);
 	void moveForward(float distance, float speed);
+	void rotateLeft(float angle, float speed);
+	void forwardWalkNew(float distance, float speed, int gait = 1);
+	void leftWalkNew(float distance, float speed);
 
 	void showIMU();
 
