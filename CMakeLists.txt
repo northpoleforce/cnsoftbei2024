@@ -62,6 +62,9 @@ endif()
 #     message(FATAL_ERROR "AprilTag Library Not Found")
 # endif()
 
+find_package(Eigen3 REQUIRED)
+include_directories(${EIGEN3_INCLUDE_DIR})
+
 # 添加头文件目录，这样在编译时可以找到这些头文件
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/unitree_legged_sdk)
@@ -93,8 +96,9 @@ set(EXTRA_LIBS -pthread libunitree_camera.a libunitree_legged_sdk.a tstc_V4L2_xu
 # add_executable(main take_photo5.cpp move.cpp Camera.cpp)
 # add_executable(main test_video.cpp move.cpp Camera.cpp)
 # add_executable(main test_corret.cpp move.cpp Camera.cpp MapImageProcessing.cpp)
-add_executable(main test_corret_v1.cpp move.cpp Camera.cpp MapImageProcessing.cpp)
+# add_executable(main test_corret_v1.cpp move.cpp Camera.cpp MapImageProcessing.cpp)
 # add_executable(main test_matchTemplate.cpp move.cpp Camera.cpp)
+add_executable(main vision_move_v0.cpp move.cpp Camera.cpp MapImageProcessing.cpp)
 
 # 包含Python头文件
 target_include_directories(main PRIVATE ${PYTHON_INCLUDE_DIRS})

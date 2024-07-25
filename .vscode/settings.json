@@ -67,6 +67,10 @@
         "variant": "cpp",
         "cfenv": "cpp",
         "future": "cpp",
-        "__nullptr": "cpp"
+        "__nullptr": "cpp",
+        "csignal": "cpp",
+        "strstream": "cpp",
+        "codecvt": "cpp",
+        "__locale": "cpp"
     }
 }

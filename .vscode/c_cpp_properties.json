@@ -7,6 +7,7 @@
                 "${workspaceFolder}/unitree_legged_sdk/include/unitree_legged_sdk/**",
                 "/usr/local/include/opencv4/**",
                 "${workspaceFolder}/include/**",
+                "/usr/include/eigen3/**",
             ],
             "defines": [],
             "compilerPath": "/usr/bin/gcc",

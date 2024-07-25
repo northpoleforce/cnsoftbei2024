@@ -16,7 +16,6 @@ private:
     int colorSLower, colorSUpper;
     int colorVLower, colorVUpper;
 };
-
 class BGRMaskGenerator
 {
 public:
@@ -30,7 +29,6 @@ private:
     int colorGLower, colorGUpper;
     int colorRLower, colorRUpper;
 };
-
 class GRAYMaskGenerator
 {
 public:
@@ -58,6 +56,28 @@ private:
     int dfs(cv::Mat &img, short x, short y);
     void dye(short x, short y, cv::Mat &img, cv::Mat &mask);
     void resetVisited(int rows, int cols);
+};
+
+class LineProcessor
+{
+private:
+    BGRMaskGenerator maskBGRGenerator;
+    ImageProcessor imageProcessor;
+
+public:
+    LineProcessor() : maskBGRGenerator(0, 90, 0, 90, 0, 90) {}
+    void preTreat(cv::Mat img,
+                  BGRMaskGenerator maskBGRGenerator, ImageProcessor imageProcessor,
+                  cv::Mat &mask0Color, cv::Mat &mask1Color, cv::Mat &edges);
+    void lineCount(const std::vector<cv::Vec4i> &lines,
+                   std::map<int, std::vector<cv::Vec4i>> &linesByDegree, std::map<int, int> &linesByDegreeCount);
+    void lineDetect(cv::Mat &img,
+                    std::vector<cv::Vec4i> &lines, cv::Mat &mask0Color, cv::Mat &mask1Color, cv::Mat &edgeColor);
+    void findLineEndsByDegree(const int &degree, const std::vector<cv::Vec4i> &lines,
+                              cv::Point &leftPoint, cv::Point &rightPoint);
+    void lineFit(cv::Mat &img,
+                 cv::Point &midPoint, int &degree);
+    void lineShow(cv::Mat &img, cv::Mat &mask0Color, cv::Mat &mask1Color, cv::Mat &edgeColor);
 };
 
 #endif // MAP_IMAGE_PROCESSING_H
