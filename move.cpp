@@ -6,7 +6,7 @@
 #include <thread>
 #include <cmath>
 #include <Eigen/Dense>
-
+#include "FaceLightClient.h"
 #include "move.h"
 
 PIDController::PIDController(double Kp, double Ki, double Kd) : Kp(Kp), Ki(Ki), Kd(Kd) {}
@@ -101,25 +101,25 @@ void Custom::lower()
   sleep(3);
   cmdReset();
 }
-// void Custom::warning() {
-//     cmdReset();
-//     FaceLightClient client;
-//     /* Same Color Test */
-//     client.setAllLed(client.red);
-//     client.sendCmd();
-//     usleep(1200000);
-//     client.setAllLed(client.blue);
-//     client.sendCmd();
-//     usleep(1200000);
-//     client.setAllLed(client.red);
-//     client.sendCmd();
-//     usleep(1200000);
-//     client.setAllLed(client.blue);
-//     client.sendCmd();
-//     usleep(1200000);
-//     client.setAllLed(client.black);
-//     client.sendCmd();
-// }
+ void Custom::warning() {
+     cmdReset();
+     FaceLightClient client;
+     /* Same Color Test */
+     client.setAllLed(client.red);
+     client.sendCmd();
+     usleep(1200000);
+     client.setAllLed(client.blue);
+     client.sendCmd();
+     usleep(1200000);
+     client.setAllLed(client.red);
+     client.sendCmd();
+     usleep(1200000);
+     client.setAllLed(client.blue);
+     client.sendCmd();
+     usleep(1200000);
+     client.setAllLed(client.black);
+     client.sendCmd();
+ }
 
 double degreesToRadians(double degrees)
 {

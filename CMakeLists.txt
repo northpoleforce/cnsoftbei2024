@@ -1,8 +1,10 @@
 # 设置cmake最低版本
 cmake_minimum_required(VERSION 3.10)
-
+set(CMAKE_CUDA_ARCHITECTURES 60 61 62 70 72 75 86)
+set(CMAKE_CUDA_COMPILER /usr/local/cuda/bin/nvcc)
+option(CUDA_USE_STATIC_CUDA_RUNTIME OFF)
 # 设置项目名称
-project(Go1_2024_0704)
+project(Go1_2024_0704 LANGUAGES CXX CUDA)
 
 # 打印项目名称
 message("Project Name: ${PROJECT_NAME}")
@@ -65,27 +67,47 @@ endif()
 find_package(Eigen3 REQUIRED)
 include_directories(${EIGEN3_INCLUDE_DIR})
 
+# CUDA
+find_package(CUDA REQUIRED)
+message(STATUS "CUDA Libs: \n${CUDA_LIBRARIES}\n")
+get_filename_component(CUDA_LIB_DIR ${CUDA_LIBRARIES} DIRECTORY)
+message(STATUS "CUDA Headers: \n${CUDA_INCLUDE_DIRS}\n")
+
+# TensorRT
+set(TensorRT_INCLUDE_DIRS /usr/include/aarch64-linux-gnu)
+set(TensorRT_LIBRARIES /usr/lib/aarch64-linux-gnu)
+message(STATUS "TensorRT Libs: \n${TensorRT_LIBRARIES}\n")
+message(STATUS "TensorRT Headers: \n${TensorRT_INCLUDE_DIRS}\n")
+
+
 # 添加头文件目录，这样在编译时可以找到这些头文件
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include)
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/unitree_legged_sdk)
 # include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/UnitreecameraSDK-main)
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/include/faceLightSDK_Nano)
 include_directories(${AprilTag_INCLUDE_DIRS})
 include_directories(/usr/local/include/apriltag)
 include_directories(/home/unitree/CAIR/CAIP2024_Go1/include/apriltag)
-
+include_directories(${TensorRT_INCLUDE_DIRS} ${CUDA_INCLUDE_DIRS})
 # 添加链接库目录，这样在链接时可以找到这些库
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/unitree_legged_sdk/${ARCH})
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/UnitreecameraSDK-main/${ARCH})
+link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib/faceLightSDK_Nano)
 link_directories(${CMAKE_CURRENT_SOURCE_DIR}/lib)
 link_directories(/usr/local/lib)
 link_directories(/home/unitree/CAIR/CAIP2024_Go1/include/apriltag/)
-
+link_directories(
+        ${CUDA_LIBRARIES}
+        ${CUDA_LIB_DIR}
+        ${OpenCV_LIBRARIES}
+        ${TensorRT_LIBRARIES}
+)
 # 设置编译标志：17表示C++17
 set(CMAKE_CXX_STANDARD 17)
 # 设置编译标志：-O3表示优化等级为3，-fPIC表示生成位置无关代码
 set(CMAKE_CXX_FLAGS "-O3 -no-pie")
 # 设置编译标志：-pthread表示使用多线程
-set(EXTRA_LIBS -pthread libunitree_camera.a libunitree_legged_sdk.a tstc_V4L2_xu_camera udev systemlog ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${X11_LIBRARIES})
+set(EXTRA_LIBS -pthread libunitree_camera.a libunitree_legged_sdk.a libfaceLight_SDK_arm64.so tstc_V4L2_xu_camera udev systemlog ${OpenCV_LIBS} ${OPENGL_LIBRARIES} ${GLUT_LIBRARY} ${X11_LIBRARIES})
 
 # 添加源文件
 # add_executable(main img7.cpp move.cpp)
@@ -98,10 +120,12 @@ set(EXTRA_LIBS -pthread libunitree_camera.a libunitree_legged_sdk.a tstc_V4L2_xu
 # add_executable(main test_corret.cpp move.cpp Camera.cpp MapImageProcessing.cpp)
 # add_executable(main test_corret_v1.cpp move.cpp Camera.cpp MapImageProcessing.cpp)
 # add_executable(main test_matchTemplate.cpp move.cpp Camera.cpp)
-add_executable(main vision_move_v0.cpp move.cpp Camera.cpp MapImageProcessing.cpp)
+add_executable(main vision_move_v0.cpp move.cpp Camera.cpp MapImageProcessing.cpp
+        include/Detect_TensorRT.hpp
+        include/common.hpp)
 
 # 包含Python头文件
-target_include_directories(main PRIVATE ${PYTHON_INCLUDE_DIRS})
+#target_include_directories(main PRIVATE ${PYTHON_INCLUDE_DIRS})
 
 # 链接库到可执行文件
-target_link_libraries(main ${EXTRA_LIBS} apriltag ${PYTHON_LIBRARIES})
+target_link_libraries(main ${EXTRA_LIBS} apriltag nvinfer nvinfer_plugin ${CUDA_LIBRARIES})
