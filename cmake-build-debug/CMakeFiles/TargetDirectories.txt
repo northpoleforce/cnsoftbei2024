@@ -1,0 +1,3 @@
+/Users/oplin/CLionProjects/24SoftCupProjects/cnsoftbei2024/cmake-build-debug/CMakeFiles/main.dir
+/Users/oplin/CLionProjects/24SoftCupProjects/cnsoftbei2024/cmake-build-debug/CMakeFiles/edit_cache.dir
+/Users/oplin/CLionProjects/24SoftCupProjects/cnsoftbei2024/cmake-build-debug/CMakeFiles/rebuild_cache.dir

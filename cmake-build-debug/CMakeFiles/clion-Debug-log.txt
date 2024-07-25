@@ -1,0 +1,12 @@
+/Applications/CLion.app/Contents/bin/cmake/mac/aarch64/bin/cmake -DCMAKE_BUILD_TYPE=Debug -DCMAKE_MAKE_PROGRAM=/Applications/CLion.app/Contents/bin/ninja/mac/aarch64/ninja -G Ninja -S /Users/oplin/CLionProjects/24SoftCupProjects/cnsoftbei2024 -B /Users/oplin/CLionProjects/24SoftCupProjects/cnsoftbei2024/cmake-build-debug
+CMake Error at /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.28/Modules/Internal/CMakeCUDAFindToolkit.cmake:104 (message):
+  Failed to find nvcc.
+
+  Compiler requires the CUDA toolkit.  Please set the CUDAToolkit_ROOT
+  variable.
+Call Stack (most recent call first):
+  /Applications/CLion.app/Contents/bin/cmake/mac/aarch64/share/cmake-3.28/Modules/CMakeDetermineCUDACompiler.cmake:89 (cmake_cuda_find_toolkit)
+  CMakeLists.txt:7 (project)
+
+
+-- Configuring incomplete, errors occurred!
