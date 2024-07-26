@@ -413,22 +413,30 @@ void LineProcessor::cornerFit(cv::Mat &img,
         }
     }
     if (abs(firstDegree) < abs(secondDegree))
-        degreeVertical = secondDegree;
-    else
-        degreeVertical = firstDegree;
+        std::swap(firstDegree, secondDegree);
+    degreeVertical = firstDegree;
     if (degreeVertical < 0)
         degreeVertical += 180;
-    // 第一多角度的线，第二多角度的线
-    double k1 = std::tan(firstDegree * CV_PI / 180.0);
-    double k2 = std::tan(secondDegree * CV_PI / 180.0);
     cv::Point midPoint1, midPoint2;
     getMidpointDraw(firstDegree, linesByDegree[firstDegree], midPoint1, edgeColor);
     getMidpointDraw(secondDegree, linesByDegree[secondDegree], midPoint2, edgeColor);
-    // 这两个角度的中线的交点
-    double x = (midPoint2.y - midPoint1.y + k1 * midPoint1.x - k2 * midPoint2.x) / (k1 - k2);
-    double y = k1 * (x - midPoint1.x) + midPoint1.y;
-    cornerMidPoint.x = x;
-    cornerMidPoint.y = y;
+    if (abs(degreeVertical) != 90)
+    {
+        // 第一多角度的线，第二多角度的线
+        double k1 = std::tan(firstDegree * CV_PI / 180.0);
+        double k2 = std::tan(secondDegree * CV_PI / 180.0);
+        // 这两个角度的中线的交点
+        double x = (midPoint2.y - midPoint1.y + k1 * midPoint1.x - k2 * midPoint2.x) / (k1 - k2);
+        double y = k1 * (x - midPoint1.x) + midPoint1.y;
+        cornerMidPoint.x = x;
+        cornerMidPoint.y = y;
+    }
+    else
+    {
+        double k2 = std::tan(secondDegree * CV_PI / 180.0);
+        cornerMidPoint.x = midPoint1.x;
+        cornerMidPoint.y = k2 * (cornerMidPoint.x - midPoint2.x) + midPoint2.y;
+    }
     // 在图像上绘制交点
     cv::circle(edgeColor, cornerMidPoint, 5, cv::Scalar(255, 0, 0), -1);
     lineShow(img, mask0Color, mask1Color, edgeColor);

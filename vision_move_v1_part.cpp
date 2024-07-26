@@ -15,7 +15,7 @@ void cornerCorrect(int taskID, Camera &cam2, LineProcessor &lineProcessor, Custo
     PIDController pidXY(0.001, 0, 0);
     PIDController pidYaw(0.05, 0, 0);
     cam2.reopen();
-    const int xtolerance = 10, ytolerance = 10, yawtolerance = 5;
+    const int xtolerance = 20, ytolerance = 20, yawtolerance = 5;
     const int xoffset = 30, yoffset = 30;
     while (true)
     {
@@ -55,57 +55,40 @@ int main()
     // 开摄像头
     Camera cam2(2);
 
-    // 移出启动区
-    custom.moveLeft(0.7, 0.2);
-    // 第一个转角：位姿矫正
-    cornerCorrect(1, cam2, lineProcessor, custom);
-
-    // 前进至第二个转角
-    sleep(1), custom.moveForward(1.4, 0.2);
-    // 第二个转角：位姿矫正
-    cornerCorrect(2, cam2, lineProcessor, custom);
-
-    // 后退至第三个转角
-    sleep(1), custom.moveForward(-1.2, 0.2);
-    // 第三个转角：位姿矫正
-    cornerCorrect(3, cam2, lineProcessor, custom);
-    
-    // 左移至第四个转角
-    sleep(1), custom.moveLeft(1.1, 0.2);
-    // 第四个转角：位姿矫正
-    cornerCorrect(4, cam2, lineProcessor, custom);
-    
-    // 前进至第五个转角
-    sleep(1), custom.moveForward(1.2, 0.2);
-    // 第五个转角：位姿矫正
-    cornerCorrect(5, cam2, lineProcessor, custom);
-    // 左转90度
-    custom.rotateLeft(90, 30);
-    custom.leftWalkNew(-0.2, 0.3), custom.forwardWalkNew(0.2, 0.3);
-
-    // 第6个转角：位姿矫正
-    cornerCorrect(6, cam2, lineProcessor, custom);
-    // 前进至第7个转角
-    sleep(1), custom.forwardWalkNew(1.2, 0.2, 3);
+    // 第3个动物识别后对位
+    cornerCorrect(8, cam2, lineProcessor, custom);
     // 右转90度
     custom.rotateLeft(-90, 30);
-    custom.moveForward(-0.3, 0.3);
+    custom.forwardWalkNew(0.1, 0.2);
 
-    // 第7个转角：位姿矫正
-    cornerCorrect(7, cam2, lineProcessor, custom);
-    custom.moveForward(1.9, 0.2);
-    custom.moveLeft(-0.2, 0.2);
-    cornerCorrect(8, cam2, lineProcessor, custom);
-    // custom.moveForward(1.2, 0.2);
-    // {
-    //     cam2.reopen();
-    //     while (1)
-    //     {
-    //         cv::Mat frame = cam2.getFrame();
-    //         cv::imshow("frame", frame);
-    //         cv::waitKey(1);
-    //     }
-    // }
+    // 避障开始对位
+    cornerCorrect(9, cam2, lineProcessor, custom);
+    // 清理障碍
+    custom.setVelocity(0, -0.5, 0), sleep(1), custom.cmdReset();
+    custom.setVelocity(0.5, 0, 0), sleep(1), custom.cmdReset();
+    sleep(1);
+    custom.setVelocity(0, 1, 0);
+    std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(700)));
+    custom.cmdReset();
+    sleep(1);
+    custom.setVelocity(-0.2, 0, 0), sleep(1), custom.cmdReset();
+
+    // 避障区起点再对位
+    cornerCorrect(10, cam2, lineProcessor, custom);
+    custom.forwardWalkNew(2.2, 0.2);                // 移动至避障区终点
+    custom.setVelocity(0, -0.2, 0), sleep(1), custom.cmdReset();
+    cornerCorrect(11, cam2, lineProcessor, custom); // 避障区终点对位
+
+    // 避障结束对位
+    cornerCorrect(12, cam2, lineProcessor, custom);
+    custom.rotateLeft(-90, 30);                                  // 右转90度
+    custom.setVelocity(-0.2, 0, 0), sleep(1), custom.cmdReset(); // 移动至大概对位位置
+    custom.setVelocity(0, 0.1, 0), sleep(1), custom.cmdReset();
+    // 终点前对位
+    cornerCorrect(12, cam2, lineProcessor, custom);
+    // 移动至终点
+    custom.setVelocity(0, 0.28, 0), sleep(4), custom.cmdReset();
+    custom.setVelocity(0.1, 0, 0), sleep(2), custom.cmdReset();
 
     return 0;
 }

@@ -78,6 +78,11 @@ public:
 	void forwardWalkNew(float distance, float speed, int gait = 1);
 	void leftWalkNew(float distance, float speed);
 
+	void rotate_test(float angle, float speed);
+	void rotate_test_2(float angle, float speed);
+	void rotate_Right1(float angle, float speed);
+	void rotate_Right_2(float angle, float speed);
+
 	void showIMU();
 
 	void Start();

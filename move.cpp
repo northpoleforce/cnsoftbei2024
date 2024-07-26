@@ -65,7 +65,7 @@ void Custom::UDPSend()
 void Custom::RobotControl()
 {
 	udp.GetRecv(state);
-	if (abs(cmd.velocity[0]) < 1 && abs(cmd.velocity[1]) < 1 && abs(cmd.yawSpeed) < 1)
+	if (abs(cmd.velocity[0]) <= 1 && abs(cmd.velocity[1]) <= 1 && abs(cmd.yawSpeed) <= 1)
 	{
 		udp.SetSend(cmd);
 	}
@@ -468,4 +468,203 @@ void Custom::Start()
 	{
 		sleep(10);
 	};
+}
+
+void Custom::rotate_test(float angle, float speed)
+{
+    // 角度转换为弧度
+    float speedRad = degreesToRadians(speed);
+    float angleRad = degreesToRadians(angle);
+    udp.GetRecv(state);
+    float initialYaw = state.imu.rpy[2];
+    float targetYaw = initialYaw + angleRad;
+
+    const float updateInterval = 0.01; // 更新间隔（秒）
+
+    cmdReset();
+    cmd.mode = 2;
+    cmd.gaitType = 1;
+    cmd.velocity[0]=0.2f;
+    cmd.yawSpeed = speedRad;
+    udp.SetSend(cmd);
+
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(updateInterval * 1000)));
+        udp.GetRecv(state);
+
+        float currentYaw = state.imu.rpy[2];
+
+        // Normalize currentYaw and targetYaw to the range [-pi, pi]
+        float yawDifference = targetYaw - currentYaw;
+        while (yawDifference > M_PI) yawDifference -= 2 * M_PI;
+        while (yawDifference < -M_PI) yawDifference += 2 * M_PI;
+
+        // Normalize currentYaw to the range [-pi, pi]
+        while (currentYaw > M_PI) currentYaw -= 2 * M_PI;
+        while (currentYaw < -M_PI) currentYaw += 2 * M_PI;
+
+        if (std::abs(yawDifference) <= 0.01) // 停止条件
+        {
+            std::cout << "Final Yaw: " << currentYaw << std::endl;
+            break;
+        }
+
+        // 动态调整速度
+        float adjustedSpeed = clamp(speedRad * (std::abs(yawDifference) / std::abs(angle)), 0.1f * speedRad, speedRad);
+        cmd.yawSpeed = adjustedSpeed * (yawDifference > 0 ? 1 : -1);
+        udp.SetSend(cmd);
+    }
+
+    cmdReset();
+    udp.SetSend(cmd);
+}
+
+void Custom::rotate_test_2(float angle, float speed)
+{
+    // 角度转换为弧度
+    float speedRad = degreesToRadians(speed);
+    float angleRad = degreesToRadians(angle);
+    udp.GetRecv(state);
+    float initialYaw = state.imu.rpy[2];
+    float targetYaw = initialYaw + angleRad;
+
+    const float updateInterval = 0.01; // 更新间隔（秒）
+
+    cmdReset();
+    cmd.mode = 2;
+    cmd.gaitType = 1;
+    cmd.velocity[0]=0.05f;
+    cmd.yawSpeed = speedRad;
+    udp.SetSend(cmd);
+
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(updateInterval * 1000)));
+        udp.GetRecv(state);
+
+        float currentYaw = state.imu.rpy[2];
+
+        // Normalize currentYaw and targetYaw to the range [-pi, pi]
+        float yawDifference = targetYaw - currentYaw;
+        while (yawDifference > M_PI) yawDifference -= 2 * M_PI;
+        while (yawDifference < -M_PI) yawDifference += 2 * M_PI;
+
+        // Normalize currentYaw to the range [-pi, pi]
+        while (currentYaw > M_PI) currentYaw -= 2 * M_PI;
+        while (currentYaw < -M_PI) currentYaw += 2 * M_PI;
+
+        if (std::abs(yawDifference) <= 0.01) // 停止条件
+        {
+            std::cout << "Final Yaw: " << currentYaw << std::endl;
+            break;
+        }
+
+        // 动态调整速度
+        float adjustedSpeed = clamp(speedRad * (std::abs(yawDifference) / std::abs(angle)), 0.1f * speedRad, speedRad);
+        cmd.yawSpeed = adjustedSpeed * (yawDifference > 0 ? 1 : -1);
+        udp.SetSend(cmd);
+    }
+
+    cmdReset();
+    udp.SetSend(cmd);
+}
+
+void Custom::rotate_Right1(float angle, float speed)
+{
+    // 角度转换为弧度
+    float speedRad = degreesToRadians(speed);
+    float angleRad = degreesToRadians(angle);
+    udp.GetRecv(state);
+    float initialYaw = state.imu.rpy[2];
+    float targetYaw = initialYaw - angleRad;  // 向右转，目标角度减少
+
+    const float updateInterval = 0.01; // 更新间隔（秒）
+
+    cmdReset();
+    cmd.mode = 2;
+    cmd.gaitType = 1;
+    cmd.velocity[0] = 0.09f; // 为了稳定移动
+    cmd.yawSpeed = -speedRad; // 向右转，速度为负
+    udp.SetSend(cmd);
+
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(updateInterval * 1000)));
+        udp.GetRecv(state);
+
+        float currentYaw = state.imu.rpy[2];
+
+        // 规范化 currentYaw 和 targetYaw 到 [-pi, pi] 范围内
+        float yawDifference = targetYaw - currentYaw;
+        while (yawDifference > M_PI) yawDifference -= 2 * M_PI;
+        while (yawDifference < -M_PI) yawDifference += 2 * M_PI;
+
+        // 规范化 currentYaw 到 [-pi, pi] 范围内
+        while (currentYaw > M_PI) currentYaw -= 2 * M_PI;
+        while (currentYaw < -M_PI) currentYaw += 2 * M_PI;
+
+        if (std::abs(yawDifference) <= 0.01) // 停止条件
+        {
+            std::cout << "Final Yaw: " << currentYaw << std::endl;
+            break;
+        }
+
+        // 动态调整速度
+        float adjustedSpeed = clamp(-speedRad * (std::abs(yawDifference) / std::abs(angleRad)), -speedRad,  -0.1f *speedRad);
+        cmd.yawSpeed = -adjustedSpeed * (yawDifference > 0 ? 1 : -1); // 向右转，速度为负
+        udp.SetSend(cmd);
+    }
+
+    cmdReset();
+    udp.SetSend(cmd);
+}
+void Custom::rotate_Right_2(float angle, float speed)
+{
+    // 角度转换为弧度
+    float speedRad = degreesToRadians(speed);
+    float angleRad = degreesToRadians(angle);
+    udp.GetRecv(state);
+    float initialYaw = state.imu.rpy[2];
+    float targetYaw = initialYaw - angleRad;  // 向右转，目标角度减少
+
+    const float updateInterval = 0.01; // 更新间隔（秒）
+
+    cmdReset();
+    cmd.mode = 2;
+    cmd.gaitType = 1;
+    cmd.velocity[0] = 0.007f; // 为了稳定移动
+    cmd.yawSpeed = -speedRad; // 向右转，速度为负
+    udp.SetSend(cmd);
+
+    while (true)
+    {
+        std::this_thread::sleep_for(std::chrono::milliseconds(static_cast<int>(updateInterval * 1000)));
+        udp.GetRecv(state);
+
+        float currentYaw = state.imu.rpy[2];
+
+        // 规范化 currentYaw 和 targetYaw 到 [-pi, pi] 范围内
+        float yawDifference = targetYaw - currentYaw;
+        while (yawDifference > M_PI) yawDifference -= 2 * M_PI;
+        while (yawDifference < -M_PI) yawDifference += 2 * M_PI;
+
+        // 规范化 currentYaw 到 [-pi, pi] 范围内
+        while (currentYaw > M_PI) currentYaw -= 2 * M_PI;
+        while (currentYaw < -M_PI) currentYaw += 2 * M_PI;
+
+        if (std::abs(yawDifference) <= 0.01) // 停止条件
+        {
+            std::cout << "Final Yaw: " << currentYaw << std::endl;
+            break;
+        }
+
+        // 动态调整速度
+        float adjustedSpeed = clamp(-speedRad * (std::abs(yawDifference) / std::abs(angleRad)), -speedRad,  -0.1f *speedRad);
+        cmd.yawSpeed = -adjustedSpeed * (yawDifference > 0 ? 1 : -1); // 向右转，速度为负
+        udp.SetSend(cmd);
+    }
+
+    cmdReset();
+    udp.SetSend(cmd);
 }
