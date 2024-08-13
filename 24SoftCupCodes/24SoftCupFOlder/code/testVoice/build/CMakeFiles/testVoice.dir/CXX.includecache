@@ -1,0 +1,16 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+/home/unitree/Documents/24SoftCupCodes/24SoftCupFOlder/code/testVoice/voice.cpp
+iostream
+-
+string
+-
+cstdlib
+-
+

@@ -1,0 +1,1 @@
+/usr/bin/c++     CMakeFiles/testVoice.dir/voice.cpp.o  -o testVoice 

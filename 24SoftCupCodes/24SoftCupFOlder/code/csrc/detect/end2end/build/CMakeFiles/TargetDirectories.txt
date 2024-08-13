@@ -1,0 +1,3 @@
+/home/unitree/Documents/24SoftCupCodes/24SoftCupFOlder/code/csrc/detect/end2end/build/CMakeFiles/rebuild_cache.dir
+/home/unitree/Documents/24SoftCupCodes/24SoftCupFOlder/code/csrc/detect/end2end/build/CMakeFiles/yolov8.dir
+/home/unitree/Documents/24SoftCupCodes/24SoftCupFOlder/code/csrc/detect/end2end/build/CMakeFiles/edit_cache.dir

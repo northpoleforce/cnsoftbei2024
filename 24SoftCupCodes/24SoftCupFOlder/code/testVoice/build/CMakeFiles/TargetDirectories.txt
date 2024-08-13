@@ -1,0 +1,3 @@
+/home/unitree/Documents/24SoftCupCodes/24SoftCupFOlder/code/testVoice/build/CMakeFiles/rebuild_cache.dir
+/home/unitree/Documents/24SoftCupCodes/24SoftCupFOlder/code/testVoice/build/CMakeFiles/testVoice.dir
+/home/unitree/Documents/24SoftCupCodes/24SoftCupFOlder/code/testVoice/build/CMakeFiles/edit_cache.dir

@@ -1,0 +1,1 @@
+/usr/bin/c++   -O3 -march=native -Wall  -rdynamic CMakeFiles/faceLightClient.dir/main.cpp.o  -o ../bin/faceLightClient  -L/home/unitree/Documents/faceLightSDK_Nano/lib -Wl,-rpath,/home/unitree/Documents/faceLightSDK_Nano/lib -lfaceLight_SDK_arm64 

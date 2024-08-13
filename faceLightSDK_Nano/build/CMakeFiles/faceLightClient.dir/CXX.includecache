@@ -1,0 +1,32 @@
+#IncludeRegexLine: ^[ 	]*[#%][ 	]*(include|import)[ 	]*[<"]([^">]+)([">])
+
+#IncludeRegexScan: ^.*$
+
+#IncludeRegexComplain: ^$
+
+#IncludeRegexTransform: 
+
+../include/FaceLightClient.h
+stdio.h
+-
+strings.h
+-
+unistd.h
+-
+errno.h
+-
+arpa/inet.h
+-
+LEDPixel.h
+../include/LEDPixel.h
+
+../include/LEDPixel.h
+stdint.h
+-
+
+/home/unitree/Documents/faceLightSDK_Nano/main.cpp
+FaceLightClient.h
+/home/unitree/Documents/faceLightSDK_Nano/FaceLightClient.h
+cstdlib
+-
+
